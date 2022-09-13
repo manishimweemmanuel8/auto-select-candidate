@@ -1,13 +1,54 @@
-import 'package:auto_select_candidate/Screens/Login/login_screen.dart';
 import 'package:auto_select_candidate/Screens/Welcome/welcome_screen.dart';
 import 'package:auto_select_candidate/Screens/scholorship/all_scholorship_screen.dart';
+import 'package:auto_select_candidate/app/features/account/screen/user/all_user.dart';
+import 'package:auto_select_candidate/Screens/user/users_screen.dart';
+import 'package:auto_select_candidate/app/features/account/screen/Login/login_screen.dart';
+import 'package:auto_select_candidate/app/features/scholorship/screen/all_scholorship.dart';
+import 'package:auto_select_candidate/helper/helper_functions.dart';
+import 'package:auto_select_candidate/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_select_candidate/constants.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class MyApp extends StatelessWidget {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isSignedIn = false;
+  String _token = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getUserLoggedInStatus();
+  }
+
+  getUserLoggedInStatus() async {
+    await HelperFunctions.getUserLoggedInStatus().then((value) {
+      if (value != null) {
+        setState(() {
+          _isSignedIn = value;
+        });
+      }
+    });
+
+    await HelperFunctions.getUserAccessTokenFromSF().then((value) {
+      if (value != null) {
+        setState(() {
+          _token = value;
+        });
+      }
+    });
+  }
 
   // This widget is the root of your application.
   @override
@@ -39,7 +80,7 @@ class MyApp extends StatelessWidget {
                 // borderSide: BorderSide.none,
                 ),
           )),
-      home: const LoginScreen(),
+      home: _isSignedIn ? const WelcomeScreen() : const LoginScreen(),
     );
   }
 }

@@ -1,21 +1,37 @@
-import 'package:auto_select_candidate/Screens/Welcome/components/add_new_program_button.dart';
-import 'package:auto_select_candidate/Screens/Welcome/components/scholorship/add_new_scholorship_button.dart';
 import 'package:auto_select_candidate/Screens/Welcome/components/candindate_dashboard.dart';
-import 'package:auto_select_candidate/Screens/Welcome/components/last_scholorship.dart';
 import 'package:auto_select_candidate/Screens/Welcome/components/combination_header.dart';
+import 'package:auto_select_candidate/Screens/Welcome/components/last_scholorship.dart';
 import 'package:auto_select_candidate/Screens/Welcome/components/program_card.dart';
 import 'package:auto_select_candidate/Screens/Welcome/components/recent_combination.dart';
 import 'package:auto_select_candidate/Screens/Welcome/components/recent_scholorship.dart';
 import 'package:auto_select_candidate/Screens/Welcome/components/statistics.dart';
-import 'package:auto_select_candidate/Screens/scholorship/all_scholorship_screen.dart';
+import 'package:auto_select_candidate/app/features/account/controller/user_controller.dart';
+import 'package:auto_select_candidate/app/features/account/model/user.dart';
+import 'package:auto_select_candidate/app/features/account/repository/user_repository.dart';
+import 'package:auto_select_candidate/app/features/account/screen/user/all_user.dart';
+import 'package:auto_select_candidate/app/features/candidate/controller/candidate_controller.dart';
+import 'package:auto_select_candidate/app/features/candidate/model/candidate.dart';
+import 'package:auto_select_candidate/app/features/candidate/repository/candidate_repository.dart';
+import 'package:auto_select_candidate/app/features/combination/controller/combination_controller.dart';
+import 'package:auto_select_candidate/app/features/combination/model/combination.dart';
+import 'package:auto_select_candidate/app/features/combination/repository/combination_repository.dart';
+import 'package:auto_select_candidate/app/features/combination/screen/all_combination.dart';
+import 'package:auto_select_candidate/app/features/program/controller/program_controller.dart';
+import 'package:auto_select_candidate/app/features/program/model/program.dart';
+import 'package:auto_select_candidate/app/features/program/repository/program_repository.dart';
+import 'package:auto_select_candidate/app/features/program/screen/all_program.dart';
+import 'package:auto_select_candidate/app/features/scholorship/controller/scholorship_controller.dart';
+import 'package:auto_select_candidate/app/features/scholorship/model/scholorship.dart';
+import 'package:auto_select_candidate/app/features/scholorship/repository/scholorship_repository.dart';
+import 'package:auto_select_candidate/app/features/scholorship/screen/all_scholorship.dart';
+import 'package:auto_select_candidate/app/features/scholorship/screen/components/add_new_scholorship_button.dart';
 import 'package:auto_select_candidate/components/app_logo.dart';
 import 'package:auto_select_candidate/components/background.dart';
 import 'package:auto_select_candidate/components/profile.dart';
+import 'package:auto_select_candidate/components/widget.dart';
 import 'package:auto_select_candidate/constants.dart';
+import 'package:auto_select_candidate/helper/helper_functions.dart';
 import 'package:flutter/material.dart';
-
-import 'components/login_signup_btn.dart';
-import 'components/welcome_image.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -25,6 +41,29 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  var userController = UserController(UserRepository());
+  var programController = ProgramController(ProgramRepository());
+  var combinationController = CombinationController(CombinationRepository());
+  var candidateController = CandidateController(CandidateRepository());
+  var scholorshipController = ScholorshipController(ScholorshipRepository());
+  bool isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserLoggedInRole();
+  }
+
+  getUserLoggedInRole() async {
+    await HelperFunctions.getUserRoleFromSF().then((value) {
+      if (value != null && value == 'ADMIN') {
+        setState(() {
+          isAdmin = true;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Background(
@@ -32,54 +71,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  // Widget createAndViewScholorship() {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(top: 10, right: 10),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.end,
-  //       children: [
-  //         Container(
-  //           height: 40,
-  //           width: 150,
-  //           decoration: BoxDecoration(
-  //             color: primaryColor.withOpacity(0.2),
-  //             borderRadius: BorderRadius.circular(22),
-  //           ),
-  //           child: const Center(
-  //             child: Text(
-  //               'Create scholorship',
-  //               style:
-  //                   TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
-  //             ),
-  //           ),
-  //         ),
-  //         const SizedBox(
-  //           width: 10,
-  //         ),
-  //         Container(
-  //           height: 40,
-  //           width: 150,
-  //           decoration: BoxDecoration(
-  //             color: primaryColor.withOpacity(0.2),
-  //             borderRadius: BorderRadius.circular(22),
-  //           ),
-  //           child: const Center(
-  //             child: Text(
-  //               'View scholorships',
-  //               style:
-  //                   TextStyle(color: blackColor, fontWeight: FontWeight.w500),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget getBody() {
     return Row(
-      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      // crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: getLeftContent(),
@@ -107,13 +100,86 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           const SizedBox(height: 30),
           getScholorshipHeader(),
           const SizedBox(height: 20),
-          const LastScholorShip(),
+          FutureBuilder<List<Scholorship>>(
+            future: scholorshipController.fetchLastScholorShipList(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Scholorship>? data = snapshot.data;
+                return ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  children: data!
+                      .map<Widget>(
+                        (scholorship) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: LastScholorShip(
+                              name: scholorship.names.toString(),
+                              date: scholorship.createdDate.toString(),
+                              description: scholorship.description.toString()),
+                        ),
+                      )
+                      .toList(),
+                );
+              } else if (snapshot.hasError) {
+                showSnackbar(context, Colors.red, '${snapshot.error}');
+              }
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(
+                      color: primaryColor,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text('This may take some time..'),
+                  ],
+                ),
+              );
+            },
+          ),
+          // const LastScholorShip(),
           const SizedBox(height: 20),
-          const RecentScholorship(),
-          const SizedBox(height: 20),
-          const RecentScholorship(),
-          const SizedBox(height: 20),
-          const RecentScholorship(),
+          FutureBuilder<List<Scholorship>>(
+            future: scholorshipController.fetchRecentScholorShipList(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Scholorship>? data = snapshot.data;
+                return ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  children: data!
+                      .map<Widget>(
+                        (scholorship) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RecentScholorship(
+                            names: scholorship.names.toString(),
+                            date: scholorship.createdDate.toString(),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                );
+              } else if (snapshot.hasError) {
+                showSnackbar(context, Colors.red, '${snapshot.error}');
+              }
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(
+                      color: primaryColor,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text('This may take some time..'),
+                  ],
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 20),
           const AddNewScholorShipButton(),
         ],
@@ -132,14 +198,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         ),
         TextButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return const AllScholorshipScreen();
-                  },
-                ),
-              );
+              nextScreenReplace(context, AllScholorshipScreen());
             },
             child: const Text(
               "View all",
@@ -157,21 +216,68 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       ),
       child: Column(
         children: [
-          //Program header
-          const CombinationHeaderPage(),
+          //Combination header
+          FutureBuilder<List<Combination>>(
+              future: combinationController.fetchCombinationList(),
+              builder: (context, snapshot) {
+                return InkWell(
+                  onTap: () {
+                    nextScreenReplace(context, const AllCombinationScreen());
+                  },
+                  child:
+                      CombinationHeaderPage(count: snapshot.data?.length ?? 0),
+                );
+              }),
           const SizedBox(height: 30),
-          const RecentCombination(
-              combination: "Physics Chemistry Biology", abbreviation: "pcb"),
+
+          FutureBuilder<List<Combination>>(
+            future: combinationController.fetchtwoLatestCombinationList(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Combination>? data = snapshot.data;
+                return ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  children: data!
+                      .map<Widget>(
+                        (combination) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RecentCombination(
+                              combination: combination.name.toString(),
+                              abbreviation:
+                                  combination.abbreviation.toString()),
+                        ),
+                      )
+                      .toList(),
+                );
+              } else if (snapshot.hasError) {
+                showSnackbar(context, Colors.red, '${snapshot.error}');
+              }
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(
+                      color: primaryColor,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text('This may take some time..'),
+                  ],
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 20),
-          const RecentCombination(
-              combination: "Mathematics Chemistry Biology",
-              abbreviation: "mcb"),
 
           const SizedBox(height: 20),
           Container(
             alignment: Alignment.topRight,
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                nextScreenReplace(context, const AllProgramScreen());
+              },
               child: const Text(
                 "View Programs",
                 style: TextStyle(
@@ -183,20 +289,48 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
           const SizedBox(height: 30),
 
-          const ProgramCard(
-              program: 'REB',
-              country: 'Rwanda',
-              studyYears: '3',
-              studyLanguage: 'English'),
-          const SizedBox(height: 20),
-          const ProgramCard(
-              program: 'cambridge',
-              country: 'Rwanda',
-              studyYears: '3',
-              studyLanguage: 'English'),
+          FutureBuilder<List<Program>>(
+            future: programController.fetchLastTwoProgramList(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Program>? data = snapshot.data;
+                return ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  children: data!
+                      .map<Widget>(
+                        (program) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ProgramCard(
+                            program: program.name.toString(),
+                            country: program.country.toString(),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                );
+              } else if (snapshot.hasError) {
+                showSnackbar(context, Colors.red, '${snapshot.error}');
+              }
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(
+                      color: primaryColor,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text('This may take some time..'),
+                  ],
+                ),
+              );
+            },
+          ),
 
           const SizedBox(height: 20),
-          const AddNewProgramButton(),
+          // const AddNewProgramButton(),
         ],
       ),
     );
@@ -215,41 +349,56 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             child: const Profile(),
           ),
           const SizedBox(height: 70),
-          const Statistic(name: "ScholorShip", count: "15"),
+          isAdmin
+              ? FutureBuilder<List<User>>(
+                  future: userController.fetchUserList(),
+                  builder: (context, snapshot) {
+                    return InkWell(
+                      onTap: () {
+                        nextScreenReplace(context, const AllUserScreen());
+                      },
+                      child: Statistic(
+                          name: "User", count: snapshot.data?.length ?? 0),
+                    );
+                  })
+              : const Text(''),
           const SizedBox(height: 20),
-          const Statistic(name: "Combination", count: "30"),
+          FutureBuilder<List<Program>>(
+              future: programController.fetchProgramList(),
+              builder: (context, snapshot) {
+                return InkWell(
+                  onTap: () {
+                    nextScreenReplace(context, const AllProgramScreen());
+                  },
+                  child: Statistic(
+                      name: "Program", count: snapshot.data?.length ?? 0),
+                );
+              }),
           const SizedBox(height: 20),
-          const Statistic(name: "Program", count: "3"),
+          FutureBuilder<List<Combination>>(
+              future: combinationController.fetchCombinationList(),
+              builder: (context, snapshot) {
+                return InkWell(
+                  onTap: () {
+                    nextScreenReplace(context, const AllCombinationScreen());
+                  },
+                  child: Statistic(
+                      name: "Combination", count: snapshot.data?.length ?? 0),
+                );
+              }),
           const SizedBox(height: 20),
-          const CandidateDashboard(),
+          FutureBuilder<List<Candidate>>(
+              future: candidateController.fetchCandidateList(),
+              builder: (context, snapshot) {
+                return InkWell(
+                  onTap: () {
+                    nextScreenReplace(context, const AllCombinationScreen());
+                  },
+                  child: CandidateDashboard(count: snapshot.data?.length ?? 0),
+                );
+              }),
         ],
       ),
     );
   }
 }
-
-// class MobileWelcomeScreen extends StatelessWidget {
-//   const MobileWelcomeScreen({
-//     Key? key,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       children: <Widget>[
-//         const WelcomeImage(),
-//         Row(
-//           children: const [
-//             Spacer(),
-//             Expanded(
-//               flex: 8,
-//               child: LoginAndSignupBtn(),
-//             ),
-//             Spacer(),
-//           ],
-//         ),
-//       ],
-//     );
-//   }
-// }

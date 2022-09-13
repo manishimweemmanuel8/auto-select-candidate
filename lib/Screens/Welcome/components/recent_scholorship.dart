@@ -2,7 +2,10 @@ import 'package:auto_select_candidate/constants.dart';
 import 'package:flutter/material.dart';
 
 class RecentScholorship extends StatefulWidget {
-  const RecentScholorship({Key? key}) : super(key: key);
+  final String names;
+  final String date;
+  const RecentScholorship({Key? key, required this.names, required this.date})
+      : super(key: key);
 
   @override
   State<RecentScholorship> createState() => _RecentScholorshipState();
@@ -43,16 +46,15 @@ class _RecentScholorshipState extends State<RecentScholorship> {
             ),
           ),
           Text(
-            "CUBA-RWANDA GOVERNMENT SCHOLARSHIPS".substring(0, 30),
+            widget.names.toString().substring(0, 30).toUpperCase(),
             style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
           ),
-          const Text(
-            "15-Aug-2022",
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+          Text(
+            widget.date.toString().substring(0, 10),
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
           ),
         ],
       ),
     );
-    
   }
 }

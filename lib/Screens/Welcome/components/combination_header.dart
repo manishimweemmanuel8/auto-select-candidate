@@ -1,8 +1,12 @@
+import 'package:auto_select_candidate/app/features/combination/screen/all_combination.dart';
+import 'package:auto_select_candidate/components/widget.dart';
 import 'package:auto_select_candidate/constants.dart';
 import 'package:flutter/material.dart';
 
 class CombinationHeaderPage extends StatefulWidget {
-  const CombinationHeaderPage({Key? key}) : super(key: key);
+  final int count;
+  const CombinationHeaderPage({Key? key, required this.count})
+      : super(key: key);
 
   @override
   State<CombinationHeaderPage> createState() => _CombinationHeaderPageState();
@@ -28,9 +32,11 @@ class _CombinationHeaderPageState extends State<CombinationHeaderPage> {
               height: 20,
             ),
             TextButton(
-              onPressed: () {},
-              child: const Text("View all : 20",
-                  style: TextStyle(fontSize: 15, color: primaryColor)),
+              onPressed: () {
+                nextScreenReplace(context, const AllCombinationScreen());
+              },
+              child: Text("View all : ${widget.count}",
+                  style: const TextStyle(fontSize: 15, color: primaryColor)),
             ),
           ],
         ),

@@ -4,15 +4,11 @@ import 'package:flutter/material.dart';
 class ProgramCard extends StatefulWidget {
   final String program;
   final String country;
-  final String studyYears;
-  final String studyLanguage;
-  const ProgramCard(
-      {Key? key,
-      required this.program,
-      required this.country,
-      required this.studyYears,
-      required this.studyLanguage})
-      : super(key: key);
+  const ProgramCard({
+    Key? key,
+    required this.program,
+    required this.country,
+  }) : super(key: key);
 
   @override
   State<ProgramCard> createState() => _ProgramCardState();
@@ -58,7 +54,7 @@ class _ProgramCardState extends State<ProgramCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.program.toUpperCase(),
+                    ' Program : ${widget.program.toUpperCase()}',
                     style: const TextStyle(
                         fontSize: 10, fontWeight: FontWeight.bold),
                   ),
@@ -76,28 +72,6 @@ class _ProgramCardState extends State<ProgramCard> {
                     const Text("Country :"),
                     Text(
                       widget.country,
-                      style: const TextStyle(
-                          fontSize: 10, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Language :"),
-                    Text(
-                      widget.studyLanguage,
-                      style: const TextStyle(
-                          fontSize: 10, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Year :"),
-                    Text(
-                      widget.studyYears,
                       style: const TextStyle(
                           fontSize: 10, fontWeight: FontWeight.w500),
                     ),

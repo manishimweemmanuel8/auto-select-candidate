@@ -1,4 +1,9 @@
+import 'package:auto_select_candidate/app/features/account/controller/user_controller.dart';
+import 'package:auto_select_candidate/app/features/account/repository/user_repository.dart';
+import 'package:auto_select_candidate/app/features/account/screen/Login/login_screen.dart';
+import 'package:auto_select_candidate/components/widget.dart';
 import 'package:auto_select_candidate/constants.dart';
+import 'package:auto_select_candidate/helper/helper_functions.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {
@@ -9,6 +14,36 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+
+  String _userName='';
+  String _role='';
+
+    @override
+  void initState() {
+    super.initState();
+    getUserLoggedInUser();
+  }
+
+   getUserLoggedInUser() async {
+    await HelperFunctions.getUserNameFromSF().then((value) {
+      if (value != null) {
+        setState(() {
+          _userName = value;
+        });
+      }
+    });
+
+    await HelperFunctions.getUserRoleFromSF().then((value) {
+      if (value != null) {
+        setState(() {
+          _role = value;
+        });
+      }
+    });
+    }
+
+    var userController=UserController(UserRepository());
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -17,36 +52,26 @@ class _ProfileState extends State<Profile> {
         Column(
           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Jean paul',
-              style: TextStyle(
+            Text(
+              _userName,
+              style:const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(
-              height: 2,
+              height: 4,
             ),
-            TextButton(
-              onPressed: () {},
-              child: const Text("Logout",
-                  style: TextStyle(fontSize: 10, color: primaryColor)),
-            ),
+            Text( _role,style:const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: primaryColor),),
           ],
         ),
         const SizedBox(
           width: defaultPadding * 3,
         ),
-        Container(
-          height: 30,
-          width: 30,
-          decoration: BoxDecoration(
-              color: primaryColor, borderRadius: BorderRadius.circular(22)),
-          child: const Icon(
-            Icons.person,
-            color: backgroundColor,
-          ),
-        ),
+           IconButton(onPressed: () {
+                    userController.signoutController();
+                    nextScreenReplace(context, const LoginScreen());
+                  }, icon: const Icon(Icons.logout_outlined,color: primaryColor,))
       ],
     );
   }

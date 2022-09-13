@@ -2,7 +2,15 @@ import 'package:auto_select_candidate/constants.dart';
 import 'package:flutter/material.dart';
 
 class LastScholorShip extends StatefulWidget {
-  const LastScholorShip({Key? key}) : super(key: key);
+  final String name;
+  final String date;
+  final String description;
+  const LastScholorShip(
+      {Key? key,
+      required this.name,
+      required this.date,
+      required this.description})
+      : super(key: key);
 
   @override
   State<LastScholorShip> createState() => _LastScholorShipState();
@@ -47,69 +55,70 @@ class _LastScholorShipState extends State<LastScholorShip> {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    "CUBA-RWANDA GOVERNMENT SCHOLARSHIPS",
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                    widget.name.toString().toUpperCase().substring(0, 50),
+                    style: const TextStyle(
+                        fontSize: 10, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Text(
-                    "15-Aug-2022 09:30",
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+                    widget.date.toString().substring(0, 10),
+                    style: const TextStyle(
+                        fontSize: 10, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: 20,
-                width: 80,
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Center(
-                  child: Text(
-                    "PCB",
-                    style: TextStyle(
-                      color: whiteColor,
-                      fontSize: 10,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Container(
-                height: 20,
-                width: 80,
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Center(
-                  child: Text(
-                    "MCB",
-                    style: TextStyle(
-                      color: whiteColor,
-                      fontSize: 10,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Container(
+          //       height: 20,
+          //       width: 80,
+          //       decoration: BoxDecoration(
+          //         color: primaryColor,
+          //         borderRadius: BorderRadius.circular(20),
+          //       ),
+          //       child: const Center(
+          //         child: Text(
+          //           "PCB",
+          //           style: TextStyle(
+          //             color: whiteColor,
+          //             fontSize: 10,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //     const SizedBox(
+          //       width: 4,
+          //     ),
+          //     Container(
+          //       height: 20,
+          //       width: 80,
+          //       decoration: BoxDecoration(
+          //         color: primaryColor,
+          //         borderRadius: BorderRadius.circular(20),
+          //       ),
+          //       child: const Center(
+          //         child: Text(
+          //           "MCB",
+          //           style: TextStyle(
+          //             color: whiteColor,
+          //             fontSize: 10,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
           Padding(
             padding: const EdgeInsets.only(left: 110, right: 22),
             child: Text(
-              "The higher education council (HEC) wishes to infomr the general public that through the bilateral cooperation between the Republic of CUBA and governmanet of Rwanda, the latter has offerde to the covernment of Rwanda one(1) partial scholarshp for Bachelor's levels, in the field of general medicine in academic year 2023"
-                  .substring(0, 300),
+              widget.description.toString(),
               style: const TextStyle(fontSize: 10),
             ),
           ),

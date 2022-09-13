@@ -1,9 +1,13 @@
+import 'package:auto_select_candidate/app/features/candidate/screen/all_candidate.dart';
+import 'package:auto_select_candidate/app/features/combination/screen/all_combination.dart';
+import 'package:auto_select_candidate/components/widget.dart';
 import 'package:auto_select_candidate/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CandidateDashboard extends StatefulWidget {
-  const CandidateDashboard({Key? key}) : super(key: key);
+  final int count;
+  const CandidateDashboard({Key? key, required this.count}) : super(key: key);
 
   @override
   State<CandidateDashboard> createState() => _CandidateDashboardState();
@@ -44,9 +48,10 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const Text(
-                    "1000",
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+                  Text(
+                    widget.count.toString(),
+                    style: const TextStyle(
+                        fontSize: 10, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -68,9 +73,14 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                   color: primaryColor,
                   borderRadius: BorderRadius.circular(22),
                 ),
-                child: const Icon(
-                  Icons.arrow_right_alt_outlined,
-                  color: backgroundColor,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_right_alt_outlined,
+                    color: backgroundColor,
+                  ),
+                  onPressed: () {
+                    nextScreenReplace(context, const AllCandidateScreen());
+                  },
                 ),
               ),
             ],

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 class Statistic extends StatefulWidget {
   final String name;
-  final String count;
+  final int count;
+  
   const Statistic({Key? key, required this.name, required this.count})
       : super(key: key);
 
@@ -50,7 +51,7 @@ class _StatisticState extends State<Statistic> {
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
           Text(
-            widget.count,
+            widget.count.toString(),
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
           ),
         ],

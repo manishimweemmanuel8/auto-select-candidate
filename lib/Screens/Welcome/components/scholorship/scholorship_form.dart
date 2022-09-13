@@ -1,5 +1,4 @@
 import 'package:auto_select_candidate/Screens/Welcome/welcome_screen.dart';
-import 'package:auto_select_candidate/Screens/forgot_password.dart/forgot_password_screen.dart';
 import 'package:auto_select_candidate/components/forgot_password_check.dart';
 import 'package:auto_select_candidate/constants.dart';
 import 'package:flutter/material.dart';
@@ -78,14 +77,14 @@ class _ScholorshipFormState extends State<ScholorshipForm> {
           const SizedBox(height: defaultPadding),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return const WelcomeScreen();
-                  },
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) {
+              //       return const WelcomeScreen();
+              //     },
+              //   ),  
+              // );
             },
             child: Text(
               "Submit".toUpperCase(),
